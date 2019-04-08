@@ -12,11 +12,11 @@
         TextElement.FontSize="14"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="WifiStrengh">
-                <Grid Style="{x:Null}">
+                <Grid >
                     <materialDesign:Chip 
         Content="{Binding AccessPoint.SignalStrength}"
         IconBackground="{DynamicResource PrimaryHueDarkBrush}"
@@ -26,6 +26,7 @@
                 Kind="Wifi"></materialDesign:PackIcon>
                         </materialDesign:Chip.Icon>
                     </materialDesign:Chip>
+                    <!--<TextBlock Text="{Binding AccessPoint.SignalStrength}"></TextBlock>-->
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="WifiIsConnect">
@@ -73,100 +74,86 @@
             </Grid>
             <Grid Grid.Row="2">
                 <DataGrid
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
   Margin="0 8 0 0"
   ItemsSource="{Binding AccessPointList}"
   CanUserSortColumns="True"
   CanUserAddRows="False"
   AutoGenerateColumns="False"
-  materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                    >
                     <DataGrid.Columns>
-                        <DataGridCheckBoxColumn
-      Binding="{Binding IsSelected}"
-      ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-      EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                            <DataGridCheckBoxColumn.Header>
-                                <!--padding to allow hit test to pass thru for sorting -->
-                                <Border
-          Background="Transparent"
-          Padding="6 0 6 0"
-          HorizontalAlignment="Center">
-                                    <CheckBox
-            HorizontalAlignment="Center"
-            DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext}"
-            IsChecked="{Binding IsAllItems3Selected}" />
-                                </Border>
-                            </DataGridCheckBoxColumn.Header>
-                        </DataGridCheckBoxColumn>
 
 
-                        <DataGridTemplateColumn
+
+                        <!--为什么用这个DataGridTemplateColumn不管事尼？？？？？？？？？？？？-->
+                        <!--<DataGridTemplateColumn
       CellTemplate="{DynamicResource WifiStrengh}"
-                   
       Header="Strength"
-       />
+       />-->
                         
                         
-                  
-                        <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
                         
                         
-                        <materialDesign:MaterialDataGridTextColumn
-      Binding="{Binding AccessPoint.Name}"
-      Header="Name"
-      EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" />
-                        <!-- set a max length to get an indicator in the editor -->
-                       
-                        
-                        <DataGridTemplateColumn
-      CellTemplate="{DynamicResource WifiIsConnect}"
-      Header="Connnect Status"
-       />
                         
                         
+
+                        <!--信号强度-->
                         <materialDesign:MaterialDataGridTextColumn
       Binding="{Binding Numeric}"
-      Header="Number with long header"
+      Header="Signal Strength"
       Width="120"
       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
-                            <DataGridTextColumn.HeaderStyle>
-                                <Style
-          TargetType="{x:Type DataGridColumnHeader}"
-          BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                    <Setter
-            Property="HorizontalAlignment"
-            Value="Right" />
-                                    <Setter
-            Property="ContentTemplate">
+                            <materialDesign:MaterialDataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Template">
                                         <Setter.Value>
-                                            <DataTemplate>
-                                                <TextBlock
-                  TextWrapping="Wrap"
-                  Text="{Binding}"
-                  TextAlignment="Right" />
-                                            </DataTemplate>
+                                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                <Grid Margin="10,0,0,0">
+                                                    <materialDesign:Chip 
+        Content="{Binding AccessPoint.SignalStrength,Mode=OneWay}"
+        IconBackground="{DynamicResource PrimaryHueDarkBrush}"
+        IconForeground="{DynamicResource PrimaryHueDarkForegroundBrush}" FontSize="16">
+                                                        <materialDesign:Chip.Icon>
+                                                            <materialDesign:PackIcon
+                Kind="Wifi"></materialDesign:PackIcon>
+                                                        </materialDesign:Chip.Icon>
+                                                    </materialDesign:Chip>
+                                                    <!--<TextBlock Text="{Binding AccessPoint.SignalStrength}"></TextBlock>-->
+                                                </Grid>
+                                            </ControlTemplate>
                                         </Setter.Value>
+                                      
                                     </Setter>
                                 </Style>
-                            </DataGridTextColumn.HeaderStyle>
-                            <DataGridTextColumn.ElementStyle>
-                                <Style
-          TargetType="{x:Type TextBlock}">
-                                    <Setter
-            Property="HorizontalAlignment"
-            Value="Right" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
+                            </materialDesign:MaterialDataGridTextColumn.CellStyle>
                         </materialDesign:MaterialDataGridTextColumn>
-                         <!--use custom combo box column to get better combos. Use ItemsSourceBinding as your binding template to be applied to each combo--> 
-                       
+
+                        <!--WIFI名称-->
+                        <materialDesign:MaterialDataGridTextColumn
+      Binding="{Binding AccessPoint.Name,Mode=OneWay}"
+      Header="Name" Width="auto" FontSize="20"
+      EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" >
+                        </materialDesign:MaterialDataGridTextColumn>
+
+
+
+                        <!--为什么用这个DataGridTemplateColumn不管事尼？？？？？？？？？？？？-->
+                        <!--<DataGridTemplateColumn
+      CellTemplate="{DynamicResource WifiIsConnect}"
+      Header="Connnect Status"
+       />-->
+
+                        <!--连接状态-->
+                        <DataGridCheckBoxColumn
+      Binding="{Binding AccessPoint.IsConnected,Mode=OneWay}"
+      ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                            Header="Connected Status"
+      EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                      
+                        </DataGridCheckBoxColumn>
                         
-                        <materialDesign:MaterialDataGridComboBoxColumn
-      Header="Food"
-      SelectedValueBinding="{Binding Food}"
-      ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Foods}" />
-                        
-                        
+
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

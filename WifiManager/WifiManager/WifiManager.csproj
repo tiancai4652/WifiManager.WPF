@@ -126,6 +126,7 @@
   <ItemGroup>
     <Content Include="Dll\SimpleWifi.dll" />
     <Content Include="Dll\SimpleWifi.pdb" />
+    <Resource Include="Question\Question.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -25,6 +25,21 @@ namespace WifiManager
             InitializeComponent();
         }
 
-      
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+            // 获取鼠标相对标题栏位置 
+            Point position = e.GetPosition(this);
+
+            // 如果鼠标位置在标题栏内，允许拖动 
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                if (position.X >= 0 && position.X < this.ActualWidth && position.Y >= 0 && position.Y < this.ActualHeight)
+                {
+                    this.DragMove();
+                }
+            }
+        }
     }
 }
