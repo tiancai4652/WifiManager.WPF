@@ -4,7 +4,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:local="clr-namespace:WifiManager"
+        xmlns:command="http://www.galasoft.ch/mvvmlight"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -34,8 +36,9 @@
                     <!--<ToggleButton
   Style="{StaticResource MaterialDesignSwitchToggleButton}"
   ToolTip="MaterialDesignSwitchToggleButton"
-  IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}" />-->
-                    <CheckBox IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}"></CheckBox>
+  IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}" Command="{Binding DisconnectCommand}"/>-->
+                    <RadioButton IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}"></RadioButton>
+                 
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -78,15 +81,22 @@
                     SelectionUnit="FullRow"
   Margin="0 8 0 0"
   ItemsSource="{Binding AccessPointList}"
+                    SelectedItem="{Binding SelectedAccessPoint}"
   CanUserSortColumns="True"
   CanUserAddRows="False"
-  AutoGenerateColumns="False"
+  AutoGenerateColumns="False" 
                     >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <command:EventToCommand Command="{Binding SelectionChangedCommand}"></command:EventToCommand>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <DataGrid.Columns>
 
 
 
                         <!--为什么用这个DataGridTemplateColumn不管事尼？？？？？？？？？？？？-->
+                        <!--换成静态资源就好了-->
                         <!--<DataGridTemplateColumn
       CellTemplate="{DynamicResource WifiStrengh}"
       Header="Strength"
@@ -139,24 +149,31 @@
 
 
                         <!--为什么用这个DataGridTemplateColumn不管事尼？？？？？？？？？？？？-->
+                        <!--换成静态资源就好了-->
                         <!--<DataGridTemplateColumn
       CellTemplate="{DynamicResource WifiIsConnect}"
       Header="Connnect Status"
        />-->
 
                         <!--连接状态-->
-                        <DataGridCheckBoxColumn
-      Binding="{Binding AccessPoint.IsConnected,Mode=OneWay}"
-      ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-                            Header="Connected Status"
-      EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                      
-                        </DataGridCheckBoxColumn>
-                        
+                    
+      <!--Binding="{Binding AccessPoint.IsConnected,Mode=OneWay}"-->
+                        <DataGridTemplateColumn
+      CellTemplate="{StaticResource WifiIsConnect}"
+      Header="Connnected"
+       />
+
+
 
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
         </Grid>
+        <Grid>
+            <materialDesign:DialogHost>
+             
+            </materialDesign:DialogHost>
+        </Grid>
     </Grid>
+   
 </Window>

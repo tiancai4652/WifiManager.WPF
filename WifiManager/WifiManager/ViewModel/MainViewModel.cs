@@ -5,6 +5,8 @@ using SimpleWifi.Win32;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Linq;
+using WifiManager.View;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace WifiManager.ViewModel
 {
@@ -36,11 +38,77 @@ namespace WifiManager.ViewModel
             }
         }
 
-        public ObservableCollection<MyAccessPoint> AccessPointList { get; set; }
+        ObservableCollection<MyAccessPoint> _AccessPointList = new ObservableCollection<MyAccessPoint>();
+        public ObservableCollection<MyAccessPoint> AccessPointList
+        {
+            get
+            {
+                return _AccessPointList;
+            }
+            set
+            {
+                _AccessPointList = value;
+                RaisePropertyChanged(()=>AccessPointList);
+            }
+        }
 
-        public MyAccessPoint SelectedAccessPoint { get; set; }
+        bool IsRefresh = false;
+        bool IsSettingOK = false;
+        MyAccessPoint _SelectedAccessPoint;
+        public MyAccessPoint SelectedAccessPoint
+        {
+            get
+            {
+                return _SelectedAccessPoint;
+            }
+            set
+            {
+                _SelectedAccessPoint = value;
+                RaisePropertyChanged(() => SelectedAccessPoint);
+            }
+        }
 
         public ICommand ListAllCommand { get; set; }
+        public ICommand SelectionChangedCommand { get; set; }
+
+        public bool IsSupportUsername
+        {
+            get
+            {
+                if (SelectedAccessPoint == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
+                    if (authRequest.IsPasswordRequired&&authRequest.IsUsernameRequired)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
+        public bool IsSupportDomain
+        {
+            get
+            {
+                if (SelectedAccessPoint == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
+                    if (authRequest.IsPasswordRequired && authRequest.IsDomainSupported)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -48,14 +116,69 @@ namespace WifiManager.ViewModel
         public MainViewModel()
         {
             ListAllCommand = new RelayCommand(ListAll);
+            SelectionChangedCommand = new RelayCommand(ConnectOrDis, !IsRefresh);
             ListAll();
+            Messenger.Default.Register<string>(this,ViewMessage.OKMsg,(msg)=> 
+            {
+                IsSettingOK = true;
+            });
         }
 
         void ListAll()
         {
+            IsRefresh = true;
             AccessPointList = new ObservableCollection<MyAccessPoint>(
                 wifi.GetAccessPoints().OrderByDescending(ap => ap.SignalStrength).Select(
                     t=>new MyAccessPoint() { AccessPoint=t}));
+            IsRefresh = false;
+        }
+
+        void ConnectOrDis()
+        {
+            if (SelectedAccessPoint != null)
+            {
+                if (SelectedAccessPoint.AccessPoint.IsConnected)
+                {
+                    wifi.Disconnect();
+                }
+                else
+                {
+                    Connect(SelectedAccessPoint);
+                }
+                ListAll();
+            }
+        }
+
+        void Connect(MyAccessPoint point)
+        {
+            if (point.AccessPoint.IsConnected)
+            {
+                return;
+            }
+            AuthRequest authRequest = new AuthRequest(point.AccessPoint);
+            bool overwrite = true;
+            if (authRequest.IsPasswordRequired)
+            {
+                if (point.AccessPoint.HasProfile)
+                {
+                    overwrite = false;
+                }
+            }
+            if (overwrite)
+            {
+                WifiSettingView view = new WifiSettingView();
+                view.ShowDialog();
+                if (IsSettingOK)
+                {
+                    var viewmodel = (view.DataContext) as WifiSettingViewModel;
+                    authRequest.Domain = viewmodel.Domain;
+                    authRequest.Password = viewmodel.Password;
+                    authRequest.Username = viewmodel.UserName;
+                }
+            }
+            point.AccessPoint.ConnectAsync(authRequest, overwrite);
+            IsSettingOK = false;
+            ListAll();
         }
     }
 }

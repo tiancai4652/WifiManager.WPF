@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WifiManager", "WifiManager\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWifi", "SimpleWifi2\SimpleWifi\SimpleWifi.csproj", "{6AA425C9-EA6A-4B01-AAED-5FF122E8B663}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvvmlight_Message_Test", "Mvvmlight_Message_Test\Mvvmlight_Message_Test.csproj", "{4FC23384-6D18-49E5-8A1D-ACA518B737E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignInXamlToolkit_ModelMessageView", "MaterialDesignInXamlToolkit_ModelMessageView\MaterialDesignInXamlToolkit_ModelMessageView.csproj", "{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{6AA425C9-EA6A-4B01-AAED-5FF122E8B663}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AA425C9-EA6A-4B01-AAED-5FF122E8B663}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AA425C9-EA6A-4B01-AAED-5FF122E8B663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FC23384-6D18-49E5-8A1D-ACA518B737E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FC23384-6D18-49E5-8A1D-ACA518B737E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FC23384-6D18-49E5-8A1D-ACA518B737E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FC23384-6D18-49E5-8A1D-ACA518B737E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,2 +1,3 @@
 1 
-为什么用这个DataGridTemplateColumn不管事尼
+为什么用这个DataGridTemplateColumn不管事尼？？？
+   <!--换成静态资源就好了-->

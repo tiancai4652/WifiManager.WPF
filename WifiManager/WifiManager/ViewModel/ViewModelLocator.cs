@@ -44,6 +44,8 @@ namespace WifiManager.ViewModel
             ////}
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<WifiSettingViewModel>();
+            //SimpleIoc.Default.Register<DialogViewModel>();
         }
 
         public MainViewModel Main
@@ -53,7 +55,34 @@ namespace WifiManager.ViewModel
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
             }
         }
-        
+
+        //public DialogViewModel Dialog
+        //{
+        //    get
+        //    {
+        //        return ServiceLocator.Current.GetInstance<DialogViewModel>();
+        //    }
+        //}
+
+        public WifiSettingViewModel Setter
+        {
+            get
+            {
+                var result= ServiceLocator.Current.GetInstance<WifiSettingViewModel>();
+                if (Main != null)
+                {
+                    result.IsSupportDomain = Main.IsSupportDomain;
+                    result.IsSupportUsername = Main.IsSupportUsername;
+                    if (Main.SelectedAccessPoint != null)
+                    {
+                        result.Title = Main.SelectedAccessPoint.AccessPoint.Name;
+                        result.MyPoint = Main.SelectedAccessPoint;
+                    }
+                }
+                return result;
+            }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

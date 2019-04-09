@@ -1,0 +1,47 @@
+﻿<Window x:Class="WifiManager.View.WifiSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WifiManager.View"
+       xmlns:base="clr-namespace:WifiManager"
+             DataContext="{Binding Source={StaticResource Locator}, Path=Setter}"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Width="500"  SizeToContent="Height">
+    <Window.Resources>
+        <base:BoolToVisibility x:Key="BoolToVisibility"/>
+    </Window.Resources>
+    <Grid Margin="10,0">
+        <StackPanel Orientation="Vertical">
+            <Grid Margin="10" Visibility="{Binding IsSupportDomain,Converter={StaticResource BoolToVisibility}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Right" Text="Domain:" FontSize="18"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding Domain}"></TextBox>
+            </Grid>
+            <Grid Margin="10" Visibility="{Binding IsSupportUsername,Converter={StaticResource BoolToVisibility}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Right" Text="Username:" FontSize="18"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding UserName}"></TextBox>
+            </Grid>
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Right" Text="Password:" FontSize="18"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding Password}"></TextBox>
+            </Grid>
+            <Grid Margin="10">
+                <Button HorizontalAlignment="Left" Width="160" Margin="34,0,0,0" Command="{Binding CancelCommand}">Cancel</Button>
+                <Button HorizontalAlignment="Right" Width="160" Margin="0,0,10,0" Command="{Binding OKCommand}" >OK</Button>
+            </Grid>
+        </StackPanel>
+        
+    </Grid>
+</Window>

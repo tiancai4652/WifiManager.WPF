@@ -1,0 +1,15 @@
+﻿<Window x:Class="Mvvmlight_Message_Test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        xmlns:local="clr-namespace:Mvvmlight_Message_Test"
+           DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TextBlock Height="200" Width="200" Margin="37,48,555,172" Text="{Binding Msg}"></TextBlock>
+        <Button Width="200" Height="200" Margin="533,144,59,76" Click="Button_Click"></Button>
+    </Grid>
+</Window>
