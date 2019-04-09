@@ -14,7 +14,7 @@
         TextElement.FontSize="14"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True">
+        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="WifiStrengh">
@@ -38,9 +38,27 @@
   ToolTip="MaterialDesignSwitchToggleButton"
   IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}" Command="{Binding DisconnectCommand}"/>-->
                     <RadioButton IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}"></RadioButton>
-                 
+
                 </Grid>
             </DataTemplate>
+            <Style
+          TargetType="{x:Type DataGridColumnHeader}" x:Key="HeaderStyle"
+          BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                <Setter
+            Property="HorizontalAlignment"
+            Value="Center" />
+                <Setter
+            Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock
+                  TextWrapping="Wrap" FontSize="20"
+                  Text="{Binding}"
+                  TextAlignment="Right" Foreground="#BC2F8CC1" FontWeight="Normal" TextDecorations="{x:Null}" />
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -111,7 +129,7 @@
                         <!--信号强度-->
                         <materialDesign:MaterialDataGridTextColumn
       Binding="{Binding Numeric}"
-      Header="Signal Strength"
+      Header="Strength" HeaderStyle="{StaticResource HeaderStyle}"
       Width="120"
       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
                             <materialDesign:MaterialDataGridTextColumn.CellStyle>
@@ -142,7 +160,7 @@
                         <!--WIFI名称-->
                         <materialDesign:MaterialDataGridTextColumn
       Binding="{Binding AccessPoint.Name,Mode=OneWay}"
-      Header="Name" Width="auto" FontSize="20"
+      Header="Name" Width="auto" FontSize="20" HeaderStyle="{StaticResource HeaderStyle}"
       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" >
                         </materialDesign:MaterialDataGridTextColumn>
 
@@ -160,7 +178,7 @@
       <!--Binding="{Binding AccessPoint.IsConnected,Mode=OneWay}"-->
                         <DataGridTemplateColumn
       CellTemplate="{StaticResource WifiIsConnect}"
-      Header="Connnected"
+      Header="Connnected" HeaderStyle="{StaticResource HeaderStyle}"
        />
 
 

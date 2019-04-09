@@ -7,7 +7,7 @@
        xmlns:base="clr-namespace:WifiManager"
              DataContext="{Binding Source={StaticResource Locator}, Path=Setter}"
         mc:Ignorable="d"
-        Title="{Binding Title}" Width="500"  SizeToContent="Height">
+        Title="{Binding Title}" Width="500"  SizeToContent="Height" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <base:BoolToVisibility x:Key="BoolToVisibility"/>
     </Window.Resources>
