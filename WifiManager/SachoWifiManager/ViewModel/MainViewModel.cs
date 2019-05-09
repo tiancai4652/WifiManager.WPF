@@ -42,6 +42,14 @@ namespace SachoWifiManager.ViewModel
 
         #region Binding Property
 
+        /// <summary>
+        /// 进度条旋转标识
+        /// </summary>
+        public bool IsProgressBarRunning
+        {
+            get { return _IsRunning || _IsConnecting; }
+        }
+
         bool _IsEnabledWifi = false;
         public bool IsEnabledWifi
         {
@@ -109,6 +117,7 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsRunning, value);
+                RaisePropertyChanged(() => IsProgressBarRunning);
             }
         }
 
@@ -125,6 +134,7 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsConnecting, value);
+                RaisePropertyChanged(() => IsProgressBarRunning);
             }
         }
 
@@ -234,48 +244,51 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         async Task OnSelectedItemChangedBodyAsync()
         {
-            if (SelectedAccessPoint.AccessPoint.IsConnected)
+            if (SelectedAccessPoint != null)
             {
-                var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
-                if (result.Equals("1"))
+                if (SelectedAccessPoint.AccessPoint.IsConnected)
                 {
-                    SelectedAccessPoint.AccessPoint.DeleteProfile();
-                }
-            }
-            else
-            {
-                AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
-                bool overwrite = true;
-                if (authRequest.IsPasswordRequired)
-                {
-                    if (SelectedAccessPoint.AccessPoint.HasProfile)
+                    var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
+                    if (result.Equals("1"))
                     {
-                        var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
-                        if (result.Equals("1"))
-                        {
-                            SelectedAccessPoint.AccessPoint.DeleteProfile();
-                        }
-                        if (result.Equals("2"))
-                        {
-                            overwrite = false;
-                            Connect(SelectedAccessPoint, overwrite, authRequest);
-                        }
-                    }
-                    else
-                    {
-                        var result = await RunWifiCfgSettingDialogAsync(SelectedAccessPoint);
-                        if (result.Item1)
-                        {
-                            authRequest.Domain = result.Item2;
-                            authRequest.Username = result.Item3;
-                            authRequest.Password = result.Item4;
-                            Connect(SelectedAccessPoint, overwrite, authRequest);
-                        }
+                        SelectedAccessPoint.AccessPoint.DeleteProfile();
                     }
                 }
                 else
                 {
-                    Connect(SelectedAccessPoint, overwrite, authRequest);
+                    AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
+                    bool overwrite = true;
+                    if (authRequest.IsPasswordRequired)
+                    {
+                        if (SelectedAccessPoint.AccessPoint.HasProfile)
+                        {
+                            var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
+                            if (result.Equals("1"))
+                            {
+                                SelectedAccessPoint.AccessPoint.DeleteProfile();
+                            }
+                            if (result.Equals("2"))
+                            {
+                                overwrite = false;
+                                Connect(SelectedAccessPoint, overwrite, authRequest);
+                            }
+                        }
+                        else
+                        {
+                            var result = await RunWifiCfgSettingDialogAsync(SelectedAccessPoint);
+                            if (result.Item1)
+                            {
+                                authRequest.Domain = result.Item2;
+                                authRequest.Username = result.Item3;
+                                authRequest.Password = result.Item4;
+                                Connect(SelectedAccessPoint, overwrite, authRequest);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Connect(SelectedAccessPoint, overwrite, authRequest);
+                    }
                 }
             }
         }

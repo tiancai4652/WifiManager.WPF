@@ -65,7 +65,8 @@
             <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
                 <Grid.RowDefinitions>
                     <!--<RowDefinition Height="3*"/>-->
-                    <RowDefinition Height="1.5*"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
                     <RowDefinition Height="20*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
@@ -76,7 +77,7 @@
   ToolTip="MaterialDesignSwitchDarkToggleButton"
   IsChecked="{Binding IsEnabledWifi}" Command="{Binding EnabledOrNotWifiCommand}"/>
                     </StackPanel>
-                    <Viewbox HorizontalAlignment="Right" Margin="0,0,20,0">
+                    <Viewbox HorizontalAlignment="Right" Margin="5,5,20,5">
                         <Button 
                         Command="{Binding ListAllCommand}"
                       
@@ -89,6 +90,15 @@
                     </Viewbox>
                 </Grid>
                 <Grid Grid.Row="1">
+                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0">可用Wifi列表</TextBlock>
+                    <Viewbox HorizontalAlignment="Right" Margin="5,5,20,5">
+                        <ProgressBar 
+  Style="{StaticResource MaterialDesignCircularProgressBar}"
+  Value="0"
+  IsIndeterminate="True" Visibility="{Binding IsProgressBarRunning,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Viewbox>
+                </Grid>
+                <Grid Grid.Row="2">
                     <DataGrid x:Name="Grid"
                     SelectionMode="Single"
                     SelectionUnit="FullRow"
