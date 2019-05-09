@@ -32,18 +32,21 @@ namespace SachoWifiManager.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            ////if (ViewModelBase.IsInDesignModeStatic)
-            ////{
-            ////    // Create design time view services and models
-            ////    SimpleIoc.Default.Register<IDataService, DesignDataService>();
-            ////}
-            ////else
-            ////{
-            ////    // Create run time view services and models
-            ////    SimpleIoc.Default.Register<IDataService, DataService>();
-            ////}
+            //if (ViewModelBase.IsInDesignModeStatic)
+            //{
+            //    // Create design time view services and models
+            //    SimpleIoc.Default.Register<IDataService, DesignDataService>();
+            //}
+            //else
+            //{
+            //    // Create run time view services and models
+            //    SimpleIoc.Default.Register<IDataService, DataService>();
+            //}
 
             SimpleIoc.Default.Register<MainViewModel>();
+            //SimpleIoc.Default.Register<WifiMsgViewModel>(true);
+            //SimpleIoc.Default.Register<WifiSettingViewModel>(true);
+            //SimpleIoc.Default.Register<WifiStateViewModel>(true);
         }
 
         public MainViewModel Main
@@ -53,7 +56,31 @@ namespace SachoWifiManager.ViewModel
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
             }
         }
-        
+
+        public WifiMsgViewModel WifiMsgViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<WifiMsgViewModel>();
+            }
+        }
+
+        public WifiSettingViewModel WifiSettingViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<WifiSettingViewModel>();
+            }
+        }
+
+        public WifiStateViewModel WifiStateViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<WifiStateViewModel>();
+            }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

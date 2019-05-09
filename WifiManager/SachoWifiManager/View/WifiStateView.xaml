@@ -4,15 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local="clr-namespace:ACalE.UI.Pages.Views"
-                  xmlns:helpers="http://www.ACalE.com/wpfhelpers"
+               xmlns:Convertor="clr-namespace:SachoWifiManager.Base"
+             xmlns:local="clr-namespace:SachoWifiManager.View"
              mc:Ignorable="d" 
              
             >
     <UserControl.Resources>
-        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <helpers:BooleanToVisibilityInverseConverter x:Key="BooleanToVisibilityInverseConverter"/>
-        <helpers:BooleanToHorizontalAlignmentConvertor x:Key="BooleanToHorizontalAlignmentConvertor"/>
+        <Convertor:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Convertor:BooleanToVisibilityInverseConverter x:Key="BooleanToVisibilityInverseConverter"/>
+        <Convertor:BooleanToHorizontalAlignmentConvertor x:Key="BooleanToHorizontalAlignmentConvertor"/>
     </UserControl.Resources>
     <Grid Margin="10,0" Width="330"
             

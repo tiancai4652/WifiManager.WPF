@@ -1,7 +1,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MaterialDesignThemes.Wpf;
 using SachoWifiManager.Helper;
 using SachoWifiManager.Model;
+using SachoWifiManager.View;
 using SimpleWifi;
 using System;
 using System.Collections.ObjectModel;
@@ -364,8 +366,9 @@ namespace SachoWifiManager.ViewModel
         /// <returns>是否配置成功/Domain/Username/Password</returns>
         static async Task<Tuple<bool, string, string, string>> RunWifiCfgSettingDialogAsync(MyAccessPoint point)
         {
+            var view = new WifiSettingView();
             WifiSettingViewModel viewmodel = new WifiSettingViewModel(point);
-            var result = await ACalDialog.Show(viewmodel);
+            var result = await DialogHost.Show(view, viewmodel.OnOpenning, viewmodel.OnClosing);
             if (result.Equals("0"))
             {
                 return new Tuple<bool, string, string, string>(false, "", "", "");
@@ -383,8 +386,11 @@ namespace SachoWifiManager.ViewModel
         /// <returns>1：删除配置文件 2：连接</returns>
         static async Task<object> RunWifiStateDialogAsync(MyAccessPoint point)
         {
-            var viewmodel = new WifiStateViewModel(point);
-            return await ACalDialog.Show(viewmodel);
+            WifiStateView view = new WifiStateView();
+            var viewModel = new WifiStateViewModel(point);
+            view.DataContext = viewModel;
+            return await DialogHost.Show(view, viewModel.OnOpenning, viewModel.OnClosing);
+
         }
 
         /// <summary>
@@ -395,8 +401,10 @@ namespace SachoWifiManager.ViewModel
         /// <returns></returns>
         static async Task<object> RunMsgViewAsync(string content, string buttonContent)
         {
+            var view = new WifiMsgView();
             var viewmodel = new WifiMsgViewModel(content, buttonContent);
-            return await ACalDialog.Show(viewmodel);
+            view.DataContext = viewmodel;
+            return await DialogHost.Show(view, viewmodel.OnOpenning, viewmodel.OnClosing);
         }
 
         /// <summary>

@@ -6,9 +6,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
            xmlns:command="http://www.galasoft.ch/mvvmlight"
+         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         xmlns:local="clr-namespace:SachoWifiManager"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Wifi Manager" Height="450" Width="800">
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="WifiStrengh">
@@ -60,15 +61,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0"  Margin="0,0,10,0">
-            <Button Content="返回" Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="60" Height="40" Margin="10,0,0,0"/>
-            <TextBlock Text="Wifi设置" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="20"/>
-        </Grid>
-        <Grid Grid.Row="1">
+        <Grid >
             <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
                 <Grid.RowDefinitions>
                     <!--<RowDefinition Height="3*"/>-->
@@ -177,8 +170,7 @@
                 </Grid>
             </Grid>
             <Grid>
-                <materialDesign:DialogHost>
-
+                <materialDesign:DialogHost DialogTheme="Inherit">
                 </materialDesign:DialogHost>
             </Grid>
         </Grid>

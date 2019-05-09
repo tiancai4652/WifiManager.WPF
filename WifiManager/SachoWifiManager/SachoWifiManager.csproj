@@ -81,10 +81,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Base\BooleanToHorizontalAlignmentConvertor.cs" />
+    <Compile Include="Base\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Base\BooleanToVisibilityConverter_HiddenInstead.cs" />
+    <Compile Include="Base\BooleanToVisibilityInverseConverter.cs" />
     <Compile Include="Helper\NetWorkAdapter.cs" />
+    <Compile Include="Model\ModalWindowBase.cs" />
     <Compile Include="Model\MyAccessPoint.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="ViewModel\WifiMsgViewModel.cs" />
+    <Compile Include="ViewModel\WifiSettingViewModel.cs" />
+    <Compile Include="ViewModel\WifiStateViewModel.cs" />
     <Compile Include="View\WifiMsgView.xaml.cs">
       <DependentUpon>WifiMsgView.xaml</DependentUpon>
     </Compile>
@@ -145,6 +153,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resource\CanSee.png" />
+    <Resource Include="Resource\CantSee.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

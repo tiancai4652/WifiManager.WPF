@@ -2,20 +2,21 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Convertor="clr-namespace:SachoWifiManager.Base"
                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                xmlns:command="http://www.galasoft.ch/mvvmlight"
                 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-             xmlns:local="clr-namespace:ACalE.UI.Pages.Views"
+             xmlns:local="clr-namespace:SachoWifiManager.View"
              mc:Ignorable="d" 
-               xmlns:helpers="http://www.ACalE.com/wpfhelpers"
                xmlns:convertor="acale.w"
             Width="auto" Height="auto" 
            
              >
     <UserControl.Resources>
-        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <helpers:BooleanToVisibilityConverter_HiddenInstead x:Key="BooleanToVisibilityConverter_HiddenInstead"/>
-        <helpers:BooleanToVisibilityInverseConverter x:Key="BooleanToVisibilityInverseConverter"/>
+        <Convertor:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Convertor:BooleanToVisibilityConverter_HiddenInstead x:Key="BooleanToVisibilityConverter_HiddenInstead"/>
+        <Convertor:BooleanToVisibilityInverseConverter x:Key="BooleanToVisibilityInverseConverter"/>
     </UserControl.Resources>
     <Grid Margin="10,0" Width="350"
             
@@ -30,11 +31,14 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Password:" FontSize="18" Margin="5,0"></TextBlock>
                 <TextBox Visibility="{Binding IsPwdCanSee,Converter={StaticResource BooleanToVisibilityConverter_HiddenInstead}}" Grid.Column="1" Text="{Binding Password}" FontSize="16" VerticalAlignment="Center"></TextBox>
-                <PasswordBox Visibility="{Binding IsPwdCanSee,Converter={StaticResource BooleanToVisibilityInverseConverter}}" Grid.Column="1" helpers:PasswordBoxHelper.Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Password"></PasswordBox>
+                <!--<PasswordBox Visibility="{Binding IsPwdCanSee,Converter={StaticResource BooleanToVisibilityInverseConverter}}" Grid.Column="1" helpers:PasswordBoxHelper.Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Password"></PasswordBox>-->
+                <PasswordBox Visibility="{Binding IsPwdCanSee,Converter={StaticResource BooleanToVisibilityInverseConverter}}" Grid.Column="1"  materialDesign:HintAssist.Hint="Password"></PasswordBox>
                 <Image Grid.Column="2" Source="{Binding ImageSource,UpdateSourceTrigger=PropertyChanged}" Stretch="Fill">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonUp">
-                            <helpers:InvokeCommand Command="{Binding PwdCanSeeChangedCommand}"/>
+                            <command:EventToCommand PassEventArgsToCommand="True"
+
+                    Command="{Binding Path=OnSelectedItemChangedCommand, Mode=OneWay}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Image>
