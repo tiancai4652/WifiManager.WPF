@@ -153,6 +153,7 @@ namespace SachoWifiManager.ViewModel
                     if (_wifi == null)
                     {
                         _wifi = new Wifi();
+                        wifi.ConnectionStatusChanged += wifi_ConnectionStatusChanged;
                     }
                     return _wifi;
                 }
@@ -436,6 +437,11 @@ namespace SachoWifiManager.ViewModel
             SelectedAccessPoint.PromptMsg = "";
             ListAll();
             IsConnecting = false;
+        }
+
+        void wifi_ConnectionStatusChanged(object sender, WifiStatusEventArgs e)
+        {
+            ListAll();
         }
 
 
