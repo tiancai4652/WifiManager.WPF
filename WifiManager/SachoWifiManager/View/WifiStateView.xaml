@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="SachoWifiManager.View.WifiStateView"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ACalE.UI.Pages.Views"
+                  xmlns:helpers="http://www.ACalE.com/wpfhelpers"
+             mc:Ignorable="d" 
+             
+            >
+    <UserControl.Resources>
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <helpers:BooleanToVisibilityInverseConverter x:Key="BooleanToVisibilityInverseConverter"/>
+        <helpers:BooleanToHorizontalAlignmentConvertor x:Key="BooleanToHorizontalAlignmentConvertor"/>
+    </UserControl.Resources>
+    <Grid Margin="10,0" Width="330"
+            
+          >
+
+        <StackPanel Orientation="Vertical">
+            <Grid Margin="10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding AccessPoint.AccessPoint.Name}" FontSize="20" Margin="5,0" FontWeight="Bold"></TextBlock>
+
+            </Grid>
+            <Grid Margin="10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="状态信息:" FontSize="18" Margin="5,0"></TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding AccessPoint.AccessPoint.IsConnected}" TextWrapping="Wrap" TextAlignment="Left" FontSize="16" VerticalAlignment="Center"></TextBlock>
+            </Grid>
+            <Grid Margin="10" Visibility="{Binding AccessPoint.AccessPoint.IsConnected,Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="信号强度:" FontSize="18" Margin="5,0"></TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding AccessPoint.AccessPoint.SignalStrength}" FontSize="16" VerticalAlignment="Center"></TextBlock>
+            </Grid >
+            <Grid Margin="10" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="连接速度:" FontSize="18" Margin="5,0"></TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding Password}" FontSize="16" VerticalAlignment="Center"></TextBlock>
+            </Grid>
+            <Grid Margin="10" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="频率:" FontSize="18" Margin="5,0"></TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding Password}" FontSize="16" VerticalAlignment="Center"></TextBlock>
+            </Grid>
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Text="加密类型:" FontSize="18" Margin="5,0"></TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding AccessPoint.AccessPoint.Dot11DefaultCipherAlgorithm}" FontSize="16" VerticalAlignment="Center"></TextBlock>
+            </Grid>
+
+            <Grid Margin="10">
+
+                <Button HorizontalAlignment="Left" Width="100"  Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0"
+                             materialDesign:DialogHost.DialogClosingAttached="{Binding CloseEvent}">取消</Button>
+                <Button HorizontalAlignment="{Binding AccessPoint.AccessPoint.IsConnected,Converter={StaticResource BooleanToHorizontalAlignmentConvertor}}" Width="100"  Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" 
+                             materialDesign:DialogHost.DialogClosingAttached="{Binding CloseEvent}">不保存</Button>
+                <Button HorizontalAlignment="Right" Width="100"  Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="2" 
+                             materialDesign:DialogHost.DialogClosingAttached="{Binding CloseEvent}" Visibility="{Binding AccessPoint.AccessPoint.IsConnected,Converter={StaticResource BooleanToVisibilityInverseConverter}}">连接</Button>
+
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

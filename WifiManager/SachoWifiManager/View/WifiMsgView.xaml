@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="SachoWifiManager.View.WifiMsgView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+               xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ACalE.UI.Pages.Views"
+             mc:Ignorable="d" 
+             Height="200" Width="500">
+    <Grid>
+        <TextBlock Text="{Binding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22"/>
+        <Button Content="{Binding ButtonContent}" Width="100" Height="30" VerticalAlignment="Bottom" Margin="20"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" 
+                             materialDesign:DialogHost.DialogClosingAttached="{Binding CloseEvent}"
+                ></Button>
+    </Grid>
+</UserControl>

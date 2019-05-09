@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvvmlight_Message_Test", "M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignInXamlToolkit_ModelMessageView", "MaterialDesignInXamlToolkit_ModelMessageView\MaterialDesignInXamlToolkit_ModelMessageView.csproj", "{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bin", "Bin", "{6D9FFC21-5C6A-4FDC-9B97-2897DD5FD588}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachoWifiManager", "SachoWifiManager\SachoWifiManager.csproj", "{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,16 @@ Global
 		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55115BB3-7D48-46A5-AFA1-AB2EF62832A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0D5DC61-EEBB-4516-B2CA-0A02D407BDDE} = {6D9FFC21-5C6A-4FDC-9B97-2897DD5FD588}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5D71302-5EDA-4F2F-B552-C0108C4A04A6}

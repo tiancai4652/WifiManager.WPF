@@ -1,0 +1,186 @@
+﻿<Window x:Class="SachoWifiManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+           xmlns:command="http://www.galasoft.ch/mvvmlight"
+        xmlns:local="clr-namespace:SachoWifiManager"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="WifiStrengh">
+                <Grid >
+                    <materialDesign:Chip 
+        Content="{Binding AccessPoint.SignalStrength}"
+        IconBackground="{DynamicResource PrimaryHueDarkBrush}"
+        IconForeground="{DynamicResource PrimaryHueDarkForegroundBrush}" FontSize="24">
+                        <materialDesign:Chip.Icon>
+                            <materialDesign:PackIcon
+                Kind="Wifi"></materialDesign:PackIcon>
+                        </materialDesign:Chip.Icon>
+                    </materialDesign:Chip>
+                    <!--<TextBlock Text="{Binding AccessPoint.SignalStrength}"></TextBlock>-->
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="WifiName">
+                <Grid>
+                    <TextBlock Margin="15,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding AccessPoint.Name,Mode=OneWay}" FontSize="20" FontWeight="Bold"></TextBlock>
+
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="WifiIsConnect">
+                <Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton IsChecked="{Binding AccessPoint.IsConnected,Mode=OneWay}"></RadioButton>
+                        <TextBlock VerticalAlignment="Bottom" Text="{Binding PromptMsg}" Foreground="#FF01CEE2" FontWeight="Bold" FontSize="10"></TextBlock>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+            <Style
+          TargetType="{x:Type DataGridColumnHeader}" x:Key="HeaderStyle"
+      >
+                <Setter
+            Property="HorizontalAlignment"
+            Value="Center" />
+                <Setter
+            Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock
+                  TextWrapping="Wrap" FontSize="20"
+                  Text="{Binding}"
+                  TextAlignment="Right" Foreground="#BC2F8CC1" FontWeight="Normal" TextDecorations="{x:Null}" />
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"  Margin="0,0,10,0">
+            <Button Content="返回" Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="60" Height="40" Margin="10,0,0,0"/>
+            <TextBlock Text="Wifi设置" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="20"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
+                <Grid.RowDefinitions>
+                    <!--<RowDefinition Height="3*"/>-->
+                    <RowDefinition Height="1.5*"/>
+                    <RowDefinition Height="20*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">WLAN</TextBlock>
+                        <ToggleButton
+  Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
+  ToolTip="MaterialDesignSwitchDarkToggleButton"
+  IsChecked="{Binding IsEnabledWifi}" Command="{Binding EnabledOrNotWifiCommand}"/>
+                    </StackPanel>
+                    <Viewbox HorizontalAlignment="Right" Margin="0,0,20,0">
+                        <Button 
+                        Command="{Binding ListAllCommand}"
+                      
+                        ToolTip="MaterialDesignFloatingActionLightButton" >
+                            <materialDesign:PackIcon
+                            Kind="Refresh"
+                            Height="auto"
+                            Width="auto" />
+                        </Button>
+                    </Viewbox>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <DataGrid x:Name="Grid"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+  Margin="0 8 0 0"
+  ItemsSource="{Binding AccessPointList}"
+                    SelectedItem="{Binding SelectedAccessPoint}"
+  CanUserSortColumns="True"
+  CanUserAddRows="False"
+  AutoGenerateColumns="False" 
+                    >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                <command:EventToCommand PassEventArgsToCommand="True"
+
+                    Command="{Binding Path=OnSelectedItemChangedCommand, Mode=OneWay}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        
+                        <!--<i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                <helpers:InvokeCommand Command="{Binding OnSelectedItemChangedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>-->
+                        <DataGrid.Columns>
+
+                            <!--信号强度-->
+                            <materialDesign:MaterialDataGridTextColumn
+      Binding="{Binding Numeric}"
+      Header="Strength" HeaderStyle="{StaticResource HeaderStyle}"
+      Width="120"
+   >
+                                <materialDesign:MaterialDataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                    <Grid Margin="10,0,0,0">
+                                                        <materialDesign:Chip 
+        Content="{Binding AccessPoint.SignalStrength,Mode=OneWay}"
+   FontSize="16">
+                                                            <materialDesign:Chip.Icon>
+                                                                <materialDesign:PackIcon
+                Kind="Wifi"></materialDesign:PackIcon>
+                                                            </materialDesign:Chip.Icon>
+                                                        </materialDesign:Chip>
+                                                        <!--<TextBlock Text="{Binding AccessPoint.SignalStrength}"></TextBlock>-->
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+
+                                        </Setter>
+                                    </Style>
+                                </materialDesign:MaterialDataGridTextColumn.CellStyle>
+                            </materialDesign:MaterialDataGridTextColumn>
+
+                            <!--WIFI名称-->
+                            <!--<materialDesign:MaterialDataGridTextColumn
+      Binding="{Binding AccessPoint.Name,Mode=OneWay}"
+      Header="Name" Width="auto" FontSize="20" HeaderStyle="{StaticResource HeaderStyle}"
+      >
+                            </materialDesign:MaterialDataGridTextColumn>-->
+
+                            <!--WIFI名称-->
+                            <DataGridTemplateColumn
+      CellTemplate="{StaticResource WifiName}"
+      Header="Name" HeaderStyle="{StaticResource HeaderStyle}"
+       />
+
+                            <!--连接状态-->
+                            <DataGridTemplateColumn
+      CellTemplate="{StaticResource WifiIsConnect}"
+      Header="Connnected" HeaderStyle="{StaticResource HeaderStyle}"
+       />
+
+
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+            <Grid>
+                <materialDesign:DialogHost>
+
+                </materialDesign:DialogHost>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
