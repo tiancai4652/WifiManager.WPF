@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Base\BooleanToBrushConverter.cs" />
     <Compile Include="Base\BooleanToHorizontalAlignmentConvertor.cs" />
     <Compile Include="Base\BooleanToVisibilityConverter.cs" />
     <Compile Include="Base\BooleanToVisibilityConverter_HiddenInstead.cs" />

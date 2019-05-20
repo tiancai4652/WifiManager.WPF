@@ -6,12 +6,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
            xmlns:command="http://www.galasoft.ch/mvvmlight"
+         xmlns:Convertor="clr-namespace:SachoWifiManager.Base"
          DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         xmlns:local="clr-namespace:SachoWifiManager"
         mc:Ignorable="d"
         Title="Wifi Manager" Height="450" Width="800">
     <Window.Resources>
         <ResourceDictionary>
+            <Convertor:BooleanToBrushConverter x:Key="BooleanToBrushConverter"/>
             <DataTemplate x:Key="WifiStrengh">
                 <Grid >
                     <materialDesign:Chip 
@@ -28,8 +30,10 @@
             </DataTemplate>
             <DataTemplate x:Key="WifiName">
                 <Grid>
-                    <TextBlock Margin="15,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding AccessPoint.Name,Mode=OneWay}" FontSize="20" FontWeight="Bold"></TextBlock>
-
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="{Binding AccessPoint.IsConnected,Mode=OneWay,Converter={StaticResource BooleanToBrushConverter}}"  Margin="15,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding AccessPoint.Name,Mode=OneWay}" FontSize="20" FontWeight="Bold"></TextBlock>
+                        <TextBlock VerticalAlignment="Bottom" Text="{Binding PromptMsg}" Foreground="#FF01CEE2" FontWeight="Bold" FontSize="10"></TextBlock>
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="WifiIsConnect">
@@ -92,14 +96,14 @@
                 <Grid Grid.Row="1">
                     <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0">可用Wifi列表</TextBlock>
                     <Viewbox HorizontalAlignment="Right" Margin="5,5,20,5">
-                        <ProgressBar 
+                        <ProgressBar  Visibility="Hidden"
   Style="{StaticResource MaterialDesignCircularProgressBar}"
   Value="0"
-  IsIndeterminate="True" Visibility="{Binding IsProgressBarRunning,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+  IsIndeterminate="True"  /><!--Visibility="{Binding IsProgressBarRunning,Converter={StaticResource BooleanToVisibilityConverter}}"-->
                     </Viewbox>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <DataGrid x:Name="Grid"
+                    <DataGrid x:Name="Grid" HeadersVisibility="None"
                     SelectionMode="Single"
                     SelectionUnit="FullRow"
   Margin="0 8 0 0"
@@ -167,13 +171,11 @@
       Header="Name" HeaderStyle="{StaticResource HeaderStyle}"
        />
 
-                            <!--连接状态-->
+                            <!--连接状态--><!--
                             <DataGridTemplateColumn
       CellTemplate="{StaticResource WifiIsConnect}"
       Header="Connnected" HeaderStyle="{StaticResource HeaderStyle}"
-       />
-
-
+       />-->
 
                         </DataGrid.Columns>
                     </DataGrid>
