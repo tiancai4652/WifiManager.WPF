@@ -34,13 +34,13 @@ namespace SachoWifiManager.ViewModel
         {
             ListAllCommand = new RelayCommand(ListAllWithToken);
             OnSelectedItemChangedCommand = new RelayCommand(OnSelectedItemChangedAsync, () => !IsRunning && !IsConnecting);
-            EnabledOrNotWifiCommand = new RelayCommand(EnabledOrNotWifiWithToken, () => !IsRunning && !IsConnecting);
+            EnabledOrNotWifiCommand = new RelayCommand(EnabledOrNotWifiWithToken);
             GetCurrentEnabledAdapter();
             IsEnabledWifi = CurrentWifiAdapter != null;
             CheckWifiIsEnabled(IsEnabledWifi);
         }
 
-       
+
 
         //CancellationToken token;
         //CancellationToken Token
@@ -57,6 +57,38 @@ namespace SachoWifiManager.ViewModel
 
         #region Binding Property
 
+        bool _IsRunningListAll = false;
+        bool IsRunningListAll
+        {
+            get { return _IsRunningListAll; }
+            set
+            {
+                Set(ref _IsRunningListAll, value);
+                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+            }
+        }
+
+        bool _IsRunnningEnabledOrNotWifi = false;
+        bool IsRunnningEnabledOrNotWifi
+        {
+            get { return _IsRunnningEnabledOrNotWifi; }
+            set
+            {
+                Set(ref _IsRunnningEnabledOrNotWifi, value);
+                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+            }
+        }
+        bool _IsRunningOnSelectedItemChanged = false;
+        bool IsRunningOnSelectedItemChanged
+        {
+            get { return _IsRunningOnSelectedItemChanged; }
+            set
+            {
+                Set(ref _IsRunningOnSelectedItemChanged, value);
+                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+            }
+        }
+
         bool _IsProgressBarRunning = false;
         /// <summary>
         /// 进度条旋转标识
@@ -66,7 +98,7 @@ namespace SachoWifiManager.ViewModel
             get { return _IsProgressBarRunning; }
             set
             {
-                Set(ref _IsProgressBarRunning, value);
+                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
             }
         }
 
@@ -196,13 +228,17 @@ namespace SachoWifiManager.ViewModel
         /// 列出所有Wifi
         /// </summary>
         void ListAllWithToken()
-        {           
-            Action action = new Action(()=> {
-                IsProgressBarRunning = true;
-                GetAllAccessPoints();
-                IsProgressBarRunning = false;
-            });
-            TaskHelperListAll.RunMethodWithToken(action);
+        {
+            Task.Run(new Action(() =>
+            {
+                Action action = new Action(() =>
+                {
+                    IsRunningListAll = true;
+                    GetAllAccessPoints();
+                    IsRunningListAll = false;
+                });
+                TaskHelperListAll.RunMethodWithToken(action);
+            }));
         }
 
         void GetAllAccessPoints()
@@ -221,30 +257,35 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         public ICommand EnabledOrNotWifiCommand { get; set; }
 
+        TaskHelper TaskHelperEnabledOrNotWifi = new TaskHelper();
+
         /// <summary>
         /// 启用或禁止wifi
         /// </summary>
         void EnabledOrNotWifiWithToken()
         {
-            //IsRunning = true;
-            SetNetWorkAdapterEnabeldAsync();
+            Task.Run(new Action(()=> {
+                _IsRunnningEnabledOrNotWifi = true;
+                if (!IsEnabledWifi)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (AccessPointList.Count > 0)
+                        {
+                            AccessPointList.Clear();
+                        }
+                    }));
+                }
+                TaskHelperEnabledOrNotWifi.RunMethodWithToken(EnabledOrNotWifi);
+                CheckWifiIsEnabled(700);
+                _IsRunnningEnabledOrNotWifi = false;
+            }));
         }
 
         void EnabledOrNotWifi()
         {
-            if (!IsEnabledWifi)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    if (AccessPointList.Count > 0)
-                    {
-                        AccessPointList.Clear();
-                    }
-                }));
-            }
             GetpotentialAdapter();
             NetWorkAdapter.SetNetWorkAdapterEnabeld(CurrentWifiAdapter, IsEnabledWifi);
-            CheckWifiIsEnabled(700);
         }
 
         #endregion

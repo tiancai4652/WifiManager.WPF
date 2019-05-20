@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SachoWifiManager.Helper
 {
+    /// <summary>
+    /// 执行任务并检测任务线程是否需要取消
+    /// </summary>
     public class TaskHelper
     {
         CancellationTokenSource source = new CancellationTokenSource();
@@ -16,15 +19,19 @@ namespace SachoWifiManager.Helper
 
         public void RunMethodWithToken(Action action)
         {
+            bool IsNeedReRun = IsRunning;
             try
             {
-                if (IsRunning)
-                {
-                    source.Cancel();
-                }
-                IsRunning = true;
                 CancellationToken token = source.Token;
                 token.ThrowIfCancellationRequested();
+                if (IsNeedReRun)
+                {
+                    source.Cancel();
+                    Thread.Sleep(100);
+                    return;
+                }
+                IsRunning = true;
+             
                 var tasks = new ConcurrentBag<Task>();
 
                 Action actionWithToken = new Action(() =>
@@ -44,7 +51,7 @@ namespace SachoWifiManager.Helper
                         {
                             token.ThrowIfCancellationRequested();
                         }
-                        Thread.Sleep(100);
+                        Thread.Sleep(10);
                     }
                 }, token);
                 tasks.Add(taskToken);
@@ -56,14 +63,14 @@ namespace SachoWifiManager.Helper
             }
             finally
             {
-                source = new CancellationTokenSource();
+                source = new CancellationTokenSource();             
                 IsRunning = false;
+                if (IsNeedReRun)
+                {
+                    Task.Run(new Action(() => { RunMethodWithToken(action); }));
+                }
+              
             }
         }
-
-
-
     }
-
-
 }
