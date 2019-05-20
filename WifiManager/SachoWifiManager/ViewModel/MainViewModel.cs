@@ -32,26 +32,15 @@ namespace SachoWifiManager.ViewModel
     {
         public MainViewModel()
         {
-            ListAllCommand = new RelayCommand(ListAll);
+            ListAllCommand = new RelayCommand(ListAllWithToken);
             OnSelectedItemChangedCommand = new RelayCommand(OnSelectedItemChangedAsync, () => !IsRunning && !IsConnecting);
-            EnabledOrNotWifiCommand = new RelayCommand(EnabledOrNotWifi, () => !IsRunning && !IsConnecting);
+            EnabledOrNotWifiCommand = new RelayCommand(EnabledOrNotWifiWithToken, () => !IsRunning && !IsConnecting);
             GetCurrentEnabledAdapter();
             IsEnabledWifi = CurrentWifiAdapter != null;
             CheckWifiIsEnabled(IsEnabledWifi);
         }
 
-        CancellationTokenSource source = new CancellationTokenSource();
-        CancellationTokenSource Source
-        {
-            get
-            {
-                if (source == null)
-                {
-                    source = new CancellationTokenSource();
-                }
-                return source;
-            }
-        }
+       
 
         //CancellationToken token;
         //CancellationToken Token
@@ -201,17 +190,20 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         public ICommand ListAllCommand { get; set; }
 
+        CancellationTokenSource sourceListAll = new CancellationTokenSource();
+      
+
         /// <summary>
         /// 列出所有Wifi
         /// </summary>
-        void ListAll()
+        void ListAllWithToken()
         {           
             Action action = new Action(()=> {
                 IsProgressBarRunning = true;
                 GetAllAccessPoints();
                 IsProgressBarRunning = false;
             });
-            TaskHelper.RunMethodWithToken(action, Source);
+            TaskHelper.RunMethodWithToken(action,ref sourceListAll);
         }
 
         void GetAllAccessPoints()
@@ -223,10 +215,7 @@ namespace SachoWifiManager.ViewModel
 
         #endregion
 
-        /// <summary>
-        /// Wifi选择项改变命令
-        /// </summary>
-        public ICommand OnSelectedItemChangedCommand { get; set; }
+        #region 启用禁止Wifi命令
 
         /// <summary>
         /// 启用禁止Wifi命令
@@ -236,11 +225,38 @@ namespace SachoWifiManager.ViewModel
         /// <summary>
         /// 启用或禁止wifi
         /// </summary>
-        void EnabledOrNotWifi()
+        void EnabledOrNotWifiWithToken()
         {
-            IsRunning = true;
+            //IsRunning = true;
             SetNetWorkAdapterEnabeldAsync();
         }
+
+        void EnabledOrNotWifi()
+        {
+            if (!IsEnabledWifi)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    if (AccessPointList.Count > 0)
+                    {
+                        AccessPointList.Clear();
+                    }
+                }));
+            }
+            GetpotentialAdapter();
+            NetWorkAdapter.SetNetWorkAdapterEnabeld(CurrentWifiAdapter, IsEnabledWifi);
+            CheckWifiIsEnabled(700);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Wifi选择项改变命令
+        /// </summary>
+        public ICommand OnSelectedItemChangedCommand { get; set; }
+
+     
+
 
       
         /// <summary>
@@ -392,7 +408,7 @@ namespace SachoWifiManager.ViewModel
         {
             if (isEnabledWifi)
             {
-                ListAll();
+                ListAllWithToken();
             }
             else
             {
@@ -481,13 +497,13 @@ namespace SachoWifiManager.ViewModel
                 }
             }));
             SelectedAccessPoint.PromptMsg = "";
-            ListAll();
+            ListAllWithToken();
             IsConnecting = false;
         }
 
         void wifi_ConnectionStatusChanged(object sender, WifiStatusEventArgs e)
         {
-            ListAll();
+            ListAllWithToken();
         }
 
 
