@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,49 +14,61 @@ namespace SachoWifiManager.Helper
     /// </summary>
     public class TaskHelper
     {
+        public TaskHelper()
+        {
+            Task.Run(new Action(()=> { Check(); }));
+            swatch.Start();
+        }
+
+        int RunTaskDelayMs = 500;
+        Stopwatch swatch = new Stopwatch();
+        Action Action = null;
+
         CancellationTokenSource source = new CancellationTokenSource();
 
         bool IsRunning = false;
 
-        public void RunMethodWithToken(Action action)
+        void RunMethod(Action action)
         {
             bool IsNeedReRun = IsRunning;
             try
             {
                 CancellationToken token = source.Token;
                 token.ThrowIfCancellationRequested();
-                if (IsNeedReRun)
+                if (IsRunning)
                 {
                     source.Cancel();
                     Thread.Sleep(100);
-                    return;
                 }
-                IsRunning = true;
-             
-                var tasks = new ConcurrentBag<Task>();
-
-                Action actionWithToken = new Action(() =>
+                else
                 {
-                    action();
-                    source.Cancel();
-                });
+                    IsRunning = true;
 
-                Task task = Task.Factory.StartNew(actionWithToken, token);
-                tasks.Add(task);
+                    var tasks = new ConcurrentBag<Task>();
 
-                Task taskToken = Task.Factory.StartNew(() =>
-                {
-                    while (true)
+                    Action actionWithToken = new Action(() =>
                     {
-                        if (token.IsCancellationRequested)
+                        action();
+                        source.Cancel();
+                    });
+
+                    Task task = Task.Factory.StartNew(actionWithToken, token);
+                    tasks.Add(task);
+
+                    Task taskToken = Task.Factory.StartNew(() =>
+                    {
+                        while (true)
                         {
-                            token.ThrowIfCancellationRequested();
+                            if (token.IsCancellationRequested)
+                            {
+                                token.ThrowIfCancellationRequested();
+                            }
+                            Thread.Sleep(10);
                         }
-                        Thread.Sleep(10);
-                    }
-                }, token);
-                tasks.Add(taskToken);
-                Task.WaitAll(tasks.ToArray());
+                    }, token);
+                    tasks.Add(taskToken);
+                    Task.WaitAll(tasks.ToArray());
+                }
             }
             catch (Exception e)
             {
@@ -63,13 +76,34 @@ namespace SachoWifiManager.Helper
             }
             finally
             {
-                source = new CancellationTokenSource();             
+                source = new CancellationTokenSource();
                 IsRunning = false;
                 if (IsNeedReRun)
                 {
                     Task.Run(new Action(() => { RunMethodWithToken(action); }));
                 }
-              
+
+            }
+        }
+
+        public void RunMethodWithToken(Action action)
+        {
+            Action = action;
+            swatch.Restart();
+        }
+
+        void Check()
+        {
+            while (true)
+            {
+                Thread.Sleep(100);
+                if ( Action != null)
+                {
+                    if (swatch.ElapsedMilliseconds > RunTaskDelayMs)
+                    {
+                        RunMethod(Action);
+                    }
+                }
             }
         }
     }

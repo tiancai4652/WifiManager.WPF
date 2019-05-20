@@ -100,6 +100,7 @@
     <Compile Include="Base\BooleanToVisibilityInverseConverter.cs" />
     <Compile Include="Helper\NetWorkAdapter.cs" />
     <Compile Include="Helper\TaskHelper.cs" />
+    <Compile Include="Helper\TaskHelper2.cs" />
     <Compile Include="Model\ModalWindowBase.cs" />
     <Compile Include="Model\MyAccessPoint.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
