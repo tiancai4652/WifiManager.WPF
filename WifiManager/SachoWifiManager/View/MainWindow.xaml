@@ -96,10 +96,10 @@
                 <Grid Grid.Row="1">
                     <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0">可用Wifi列表</TextBlock>
                     <Viewbox HorizontalAlignment="Right" Margin="5,5,20,5">
-                        <ProgressBar  Visibility="Hidden"
+                        <ProgressBar  Visibility="{Binding IsProgressBarRunning,Converter={StaticResource BooleanToVisibilityConverter}}"
   Style="{StaticResource MaterialDesignCircularProgressBar}"
   Value="0"
-  IsIndeterminate="True"  /><!--Visibility="{Binding IsProgressBarRunning,Converter={StaticResource BooleanToVisibilityConverter}}"-->
+  IsIndeterminate="True"  />
                     </Viewbox>
                 </Grid>
                 <Grid Grid.Row="2">

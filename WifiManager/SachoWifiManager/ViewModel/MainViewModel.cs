@@ -6,6 +6,7 @@ using SachoWifiManager.Model;
 using SachoWifiManager.View;
 using SimpleWifi;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management;
@@ -29,7 +30,6 @@ namespace SachoWifiManager.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-
         public MainViewModel()
         {
             ListAllCommand = new RelayCommand(ListAll);
@@ -40,14 +40,45 @@ namespace SachoWifiManager.ViewModel
             CheckWifiIsEnabled(IsEnabledWifi);
         }
 
+        CancellationTokenSource source = new CancellationTokenSource();
+        CancellationTokenSource Source
+        {
+            get
+            {
+                if (source == null)
+                {
+                    source = new CancellationTokenSource();
+                }
+                return source;
+            }
+        }
+
+        //CancellationToken token;
+        //CancellationToken Token
+        //{
+        //    get
+        //    {
+        //        if (token == null)
+        //        {
+        //            token = Source.Token;
+        //        }
+        //        return token;
+        //    }
+        //}
+
         #region Binding Property
 
+        bool _IsProgressBarRunning = false;
         /// <summary>
         /// 进度条旋转标识
         /// </summary>
         public bool IsProgressBarRunning
         {
-            get { return _IsRunning || _IsConnecting; }
+            get { return _IsProgressBarRunning; }
+            set
+            {
+                Set(ref _IsProgressBarRunning, value);
+            }
         }
 
         bool _IsEnabledWifi = false;
@@ -163,10 +194,34 @@ namespace SachoWifiManager.ViewModel
 
         #region Command&&Command Method
 
+        #region ListAll
+
         /// <summary>
         /// 列出所有Wifi命令
         /// </summary>
         public ICommand ListAllCommand { get; set; }
+
+        /// <summary>
+        /// 列出所有Wifi
+        /// </summary>
+        void ListAll()
+        {           
+            Action action = new Action(()=> {
+                IsProgressBarRunning = true;
+                GetAllAccessPoints();
+                IsProgressBarRunning = false;
+            });
+            TaskHelper.RunMethodWithToken(action, Source);
+        }
+
+        void GetAllAccessPoints()
+        {
+            AccessPointList = new ObservableCollection<MyAccessPoint>(
+            wifi.GetAccessPoints().OrderByDescending(s => s.IsConnected).OrderByDescending(ap => ap.SignalStrength).Select(
+                t => new MyAccessPoint() { AccessPoint = t }));
+        }
+
+        #endregion
 
         /// <summary>
         /// Wifi选择项改变命令
@@ -187,16 +242,7 @@ namespace SachoWifiManager.ViewModel
             SetNetWorkAdapterEnabeldAsync();
         }
 
-        /// <summary>
-        /// 列出所有Wifi
-        /// </summary>
-        void ListAll()
-        {
-            AccessPointList = new ObservableCollection<MyAccessPoint>(
-                wifi.GetAccessPoints().OrderByDescending(s => s.IsConnected).OrderByDescending(ap => ap.SignalStrength).Select(
-                    t => new MyAccessPoint() { AccessPoint = t }));
-        }
-
+      
         /// <summary>
         /// Wifi选择项改变
         /// </summary>
