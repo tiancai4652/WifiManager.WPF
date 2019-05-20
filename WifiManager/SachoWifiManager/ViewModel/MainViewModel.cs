@@ -190,8 +190,7 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         public ICommand ListAllCommand { get; set; }
 
-        CancellationTokenSource sourceListAll = new CancellationTokenSource();
-      
+        TaskHelper TaskHelperListAll = new TaskHelper();
 
         /// <summary>
         /// 列出所有Wifi
@@ -203,7 +202,7 @@ namespace SachoWifiManager.ViewModel
                 GetAllAccessPoints();
                 IsProgressBarRunning = false;
             });
-            TaskHelper.RunMethodWithToken(action,ref sourceListAll);
+            TaskHelperListAll.RunMethodWithToken(action);
         }
 
         void GetAllAccessPoints()
