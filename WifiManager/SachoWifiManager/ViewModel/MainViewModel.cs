@@ -33,11 +33,12 @@ namespace SachoWifiManager.ViewModel
         public MainViewModel()
         {
             ListAllCommand = new RelayCommand(ListAllWithToken);
-            OnSelectedItemChangedCommand = new RelayCommand(OnSelectedItemChangedAsync, () => !IsRunning && !IsConnecting);
+            OnSelectedItemChangedCommand = new RelayCommand(OnSelectedItemChangedWithToken);
             EnabledOrNotWifiCommand = new RelayCommand(EnabledOrNotWifiWithToken);
             GetCurrentEnabledAdapter();
             IsEnabledWifi = CurrentWifiAdapter != null;
             CheckWifiIsEnabled(IsEnabledWifi);
+            IsProgressBarRunning = false;
         }
 
 
@@ -64,7 +65,9 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsRunningListAll, value);
-                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+               
+                IsProgressBarRunning= _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged;
+               
             }
         }
 
@@ -75,7 +78,7 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsRunnningEnabledOrNotWifi, value);
-                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+                IsProgressBarRunning = _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged;
             }
         }
         bool _IsRunningOnSelectedItemChanged = false;
@@ -85,11 +88,11 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsRunningOnSelectedItemChanged, value);
-                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+                IsProgressBarRunning = _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged;
             }
         }
 
-        bool _IsProgressBarRunning = false;
+        bool _IsProgressBarRunning = true;
         /// <summary>
         /// 进度条旋转标识
         /// </summary>
@@ -98,7 +101,7 @@ namespace SachoWifiManager.ViewModel
             get { return _IsProgressBarRunning; }
             set
             {
-                Set("IsProgressBarRunning", ref _IsProgressBarRunning, _IsRunningListAll || _IsRunnningEnabledOrNotWifi || _IsRunningOnSelectedItemChanged);
+                Set(ref _IsProgressBarRunning, value);
             }
         }
 
@@ -156,23 +159,6 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         ManagementObject CurrentWifiAdapter = null;
 
-        bool _IsRunning = false;
-        /// <summary>
-        /// 是否命令正在执行
-        /// </summary>
-        bool IsRunning
-        {
-            get
-            {
-                return _IsRunning;
-            }
-            set
-            {
-                Set(ref _IsRunning, value);
-                RaisePropertyChanged(() => IsProgressBarRunning);
-            }
-        }
-
         bool _IsConnecting = false;
         /// <summary>
         /// 是否wifi正在连接中
@@ -186,7 +172,6 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _IsConnecting, value);
-                RaisePropertyChanged(() => IsProgressBarRunning);
             }
         }
 
@@ -234,18 +219,24 @@ namespace SachoWifiManager.ViewModel
                 Action action = new Action(() =>
                 {
                     IsRunningListAll = true;
+
                     GetAllAccessPoints();
-                    IsRunningListAll = false;
+
                 });
-                TaskHelperListAll.RunMethodWithToken(action);
+                TaskHelperListAll.SendAction(action,new Action(()=> { IsRunningListAll = false; }));
             }));
         }
 
         void GetAllAccessPoints()
         {
-            AccessPointList = new ObservableCollection<MyAccessPoint>(
-            wifi.GetAccessPoints().OrderByDescending(s => s.IsConnected).OrderByDescending(ap => ap.SignalStrength).Select(
-                t => new MyAccessPoint() { AccessPoint = t }));
+            try
+            {
+                AccessPointList = new ObservableCollection<MyAccessPoint>(
+                wifi.GetAccessPoints().OrderByDescending(s => s.IsConnected).OrderByDescending(ap => ap.SignalStrength).Select(
+                    t => new MyAccessPoint() { AccessPoint = t }));
+            }
+            catch
+            { }
         }
 
         #endregion
@@ -265,7 +256,7 @@ namespace SachoWifiManager.ViewModel
         void EnabledOrNotWifiWithToken()
         {
             Task.Run(new Action(()=> {
-                _IsRunnningEnabledOrNotWifi = true;
+                IsRunnningEnabledOrNotWifi = true;
                 if (!IsEnabledWifi)
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -276,38 +267,43 @@ namespace SachoWifiManager.ViewModel
                         }
                     }));
                 }
-                TaskHelperEnabledOrNotWifi.RunMethodWithToken(EnabledOrNotWifi);
-                CheckWifiIsEnabled(700);
-                _IsRunnningEnabledOrNotWifi = false;
+                TaskHelperEnabledOrNotWifi.SendAction(EnabledOrNotWifi,new Action(()=> { IsRunnningEnabledOrNotWifi = false; }));
             }));
         }
 
         void EnabledOrNotWifi()
         {
-            GetpotentialAdapter();
-            NetWorkAdapter.SetNetWorkAdapterEnabeld(CurrentWifiAdapter, IsEnabledWifi);
+            try
+            {
+                GetpotentialAdapter();
+                NetWorkAdapter.SetNetWorkAdapterEnabeld(CurrentWifiAdapter, IsEnabledWifi);
+                CheckWifiIsEnabled(1000);
+            }
+            catch
+            { }
         }
 
         #endregion
+
+        #region OnSelectedItemChanged
 
         /// <summary>
         /// Wifi选择项改变命令
         /// </summary>
         public ICommand OnSelectedItemChangedCommand { get; set; }
 
-     
 
 
-      
         /// <summary>
         /// Wifi选择项改变
         /// </summary>
-        async void OnSelectedItemChangedAsync()
+        void OnSelectedItemChangedWithToken()
         {
-            IsRunning = true;
-            await OnSelectedItemChangedBodyAsync();
-            IsRunning = false;
+            IsRunningOnSelectedItemChanged = true;
+            OnSelectedItemChangedBodyAsync();
         }
+
+        #endregion
 
         #endregion
 
@@ -331,13 +327,12 @@ namespace SachoWifiManager.ViewModel
                     }
                     GetpotentialAdapter();
                     NetWorkAdapter.SetNetWorkAdapterEnabeld(CurrentWifiAdapter, IsEnabledWifi);
-                    CheckWifiIsEnabled(700);
+                    CheckWifiIsEnabled(1000);
                 }
                 catch (Exception ex)
                 { }
                 finally
                 {
-                    IsRunning = false;
                 }
             }));
         }
@@ -345,54 +340,64 @@ namespace SachoWifiManager.ViewModel
         /// <summary>
         /// Wifi选择项改变
         /// </summary>
-        async Task OnSelectedItemChangedBodyAsync()
+        async void OnSelectedItemChangedBodyAsync()
         {
-            if (SelectedAccessPoint != null)
+            try
             {
-                if (SelectedAccessPoint.AccessPoint.IsConnected)
-                {
-                    var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
-                    if (result.Equals("1"))
+                if (SelectedAccessPoint != null)
+                 {
+                    if (SelectedAccessPoint.AccessPoint.IsConnected)
                     {
-                        SelectedAccessPoint.AccessPoint.DeleteProfile();
-                    }
-                }
-                else
-                {
-                    AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
-                    bool overwrite = true;
-                    if (authRequest.IsPasswordRequired)
-                    {
-                        if (SelectedAccessPoint.AccessPoint.HasProfile)
+                        var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
+                        if (result.Equals("1"))
                         {
-                            var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
-                            if (result.Equals("1"))
-                            {
-                                SelectedAccessPoint.AccessPoint.DeleteProfile();
-                            }
-                            if (result.Equals("2"))
-                            {
-                                overwrite = false;
-                                Connect(SelectedAccessPoint, overwrite, authRequest);
-                            }
-                        }
-                        else
-                        {
-                            var result = await RunWifiCfgSettingDialogAsync(SelectedAccessPoint);
-                            if (result.Item1)
-                            {
-                                authRequest.Domain = result.Item2;
-                                authRequest.Username = result.Item3;
-                                authRequest.Password = result.Item4;
-                                Connect(SelectedAccessPoint, overwrite, authRequest);
-                            }
+                            SelectedAccessPoint.AccessPoint.DeleteProfile();
                         }
                     }
                     else
                     {
-                        Connect(SelectedAccessPoint, overwrite, authRequest);
+                        AuthRequest authRequest = new AuthRequest(SelectedAccessPoint.AccessPoint);
+                        bool overwrite = true;
+                        if (authRequest.IsPasswordRequired)
+                        {
+                            if (SelectedAccessPoint.AccessPoint.HasProfile)
+                            {
+                                System.Windows.Application.Current.Dispatcher.Invoke(new Action(async () =>
+                                {
+                                    var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
+                                    if (result.Equals("1"))
+                                    {
+                                        SelectedAccessPoint.AccessPoint.DeleteProfile();
+                                    }
+                                    if (result.Equals("2"))
+                                    {
+                                        overwrite = false;
+                                        Connect(SelectedAccessPoint, overwrite, authRequest);
+                                    }
+                                }));
+                            }
+                            else
+                            {
+                                var result = await RunWifiCfgSettingDialogAsync(SelectedAccessPoint);
+                                if (result.Item1)
+                                {
+                                    authRequest.Domain = result.Item2;
+                                    authRequest.Username = result.Item3;
+                                    authRequest.Password = result.Item4;
+                                    Connect(SelectedAccessPoint, overwrite, authRequest);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Connect(SelectedAccessPoint, overwrite, authRequest);
+                        }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                
             }
         }
 
@@ -423,20 +428,14 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         void CheckWifiIsEnabled(int delayMs = 0)
         {
-            Task.Run(new Action(() =>
-            {
-                CheckWifiIsEnabled(IsEnabledWifi);
-            }));
+            CheckWifiIsEnabled(IsEnabledWifi);
             if (delayMs > 0)
             {
-                Task.Run(new Action(() =>
+                if (IsEnabledWifi)
                 {
-                    if (IsEnabledWifi)
-                    {
-                        Thread.Sleep(delayMs);
-                    }
-                    CheckWifiIsEnabled(IsEnabledWifi);
-                }));
+                    Thread.Sleep(delayMs);
+                }
+                CheckWifiIsEnabled(IsEnabledWifi);
             }
         }
 
@@ -448,7 +447,7 @@ namespace SachoWifiManager.ViewModel
         {
             if (isEnabledWifi)
             {
-                ListAllWithToken();
+                GetAllAccessPoints();
             }
             else
             {
@@ -505,8 +504,8 @@ namespace SachoWifiManager.ViewModel
             WifiStateView view = new WifiStateView();
             var viewModel = new WifiStateViewModel(point);
             view.DataContext = viewModel;
-            return await DialogHost.Show(view, viewModel.OnOpenning, viewModel.OnClosing);
-
+            var result= await DialogHost.Show(view, viewModel.OnOpenning, viewModel.OnClosing);
+            return result;
         }
 
         /// <summary>
@@ -537,13 +536,13 @@ namespace SachoWifiManager.ViewModel
                 }
             }));
             SelectedAccessPoint.PromptMsg = "";
-            ListAllWithToken();
+            GetAllAccessPoints();
             IsConnecting = false;
         }
 
         void wifi_ConnectionStatusChanged(object sender, WifiStatusEventArgs e)
         {
-            ListAllWithToken();
+            GetAllAccessPoints();
         }
 
 
