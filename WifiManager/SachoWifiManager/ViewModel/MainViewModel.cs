@@ -38,7 +38,7 @@ namespace SachoWifiManager.ViewModel
             GetCurrentEnabledAdapter();
             IsEnabledWifi = CurrentWifiAdapter != null;
             CheckWifiIsEnabled(IsEnabledWifi);
-            IsProgressBarRunning = false;
+            
         }
 
 
@@ -92,7 +92,7 @@ namespace SachoWifiManager.ViewModel
             }
         }
 
-        bool _IsProgressBarRunning = true;
+        bool _IsProgressBarRunning = false;
         /// <summary>
         /// 进度条旋转标识
         /// </summary>
@@ -135,7 +135,7 @@ namespace SachoWifiManager.ViewModel
         }
 
         /// <summary>
-        /// 选择的Wifi
+        /// 当前选择的Wifi
         /// </summary>
         MyAccessPoint _SelectedAccessPoint;
         public MyAccessPoint SelectedAccessPoint
@@ -147,6 +147,22 @@ namespace SachoWifiManager.ViewModel
             set
             {
                 Set(ref _SelectedAccessPoint, value);
+            }
+        }
+
+        /// <summary>
+        /// 某一时刻选择的Wifi名
+        /// </summary>
+        string _SelectedAccessPointNameInTime;
+        public string SelectedAccessPointNameInTime
+        {
+            get
+            {
+                return _SelectedAccessPointNameInTime;
+            }
+            set
+            {
+                Set(ref _SelectedAccessPointNameInTime, value);
             }
         }
 
@@ -292,7 +308,7 @@ namespace SachoWifiManager.ViewModel
         /// </summary>
         public ICommand OnSelectedItemChangedCommand { get; set; }
 
-
+     
 
         /// <summary>
         /// Wifi选择项改变
@@ -301,6 +317,7 @@ namespace SachoWifiManager.ViewModel
         {
             IsRunningOnSelectedItemChanged = true;
             OnSelectedItemChangedBodyAsync();
+            IsRunningOnSelectedItemChanged = false;
         }
 
         #endregion
@@ -469,6 +486,7 @@ namespace SachoWifiManager.ViewModel
         /// <param name="authRequest"></param>
         void Connect(MyAccessPoint point, bool overwrite, AuthRequest authRequest)
         {
+            SelectedAccessPointNameInTime = SelectedAccessPoint.AccessPoint.Name;
             point.PromptMsg = "连接中....";
             IsConnecting = true;
             point.AccessPoint.ConnectAsync(authRequest, overwrite, GiveMsgIfConnectFailed);
@@ -483,6 +501,7 @@ namespace SachoWifiManager.ViewModel
         {
             var view = new WifiSettingView();
             WifiSettingViewModel viewmodel = new WifiSettingViewModel(point);
+            view.DataContext = viewmodel;
             var result = await DialogHost.Show(view, viewmodel.OnOpenning, viewmodel.OnClosing);
             if (result.Equals("0"))
             {
@@ -528,16 +547,19 @@ namespace SachoWifiManager.ViewModel
         /// <param name="success"></param>
         void GiveMsgIfConnectFailed(bool success)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(new Action(async () =>
+            if (SelectedAccessPointNameInTime.Equals(SelectedAccessPoint?.AccessPoint?.Name))
             {
-                if (!success)
+                System.Windows.Application.Current.Dispatcher.Invoke(new Action(async () =>
                 {
-                    await RunMsgViewAsync("连接失败" /*+ "(" + SelectedAccessPoint.AccessPoint.WlanNotConnectableReason + ")"*/, "知道了");
-                }
-            }));
-            SelectedAccessPoint.PromptMsg = "";
-            GetAllAccessPoints();
-            IsConnecting = false;
+                    if (!success)
+                    {
+                        await RunMsgViewAsync("连接失败" /*+ "(" + SelectedAccessPoint.AccessPoint.WlanNotConnectableReason + ")"*/, "知道了");
+                    }
+                }));
+                AccessPointList.All(t => { t.PromptMsg = ""; return true; });
+                GetAllAccessPoints();
+                IsConnecting = false;
+            }
         }
 
         void wifi_ConnectionStatusChanged(object sender, WifiStatusEventArgs e)

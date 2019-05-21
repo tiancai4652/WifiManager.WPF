@@ -109,7 +109,7 @@
                     SelectionUnit="FullRow"
   Margin="0 8 0 0"
   ItemsSource="{Binding AccessPointList}"
-                    SelectedItem="{Binding SelectedAccessPoint}"
+                    SelectedItem="{Binding SelectedAccessPoint,Mode=OneWayToSource}"
   CanUserSortColumns="True"
   CanUserAddRows="False"
   AutoGenerateColumns="False" 

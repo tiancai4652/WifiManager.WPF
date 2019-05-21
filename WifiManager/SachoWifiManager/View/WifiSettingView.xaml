@@ -38,7 +38,7 @@
                         <i:EventTrigger EventName="MouseLeftButtonUp">
                             <command:EventToCommand PassEventArgsToCommand="True"
 
-                    Command="{Binding Path=OnSelectedItemChangedCommand, Mode=OneWay}" />
+                    Command="{Binding Path=PwdCanSeeChangedCommand, Mode=OneWay}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Image>
