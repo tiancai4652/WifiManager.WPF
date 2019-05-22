@@ -379,19 +379,16 @@ namespace SachoWifiManager.ViewModel
                         {
                             if (SelectedAccessPoint.AccessPoint.HasProfile)
                             {
-                                System.Windows.Application.Current.Dispatcher.Invoke(new Action(async () =>
+                                var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
+                                if (result.Equals("1"))
                                 {
-                                    var result = await RunWifiStateDialogAsync(SelectedAccessPoint);
-                                    if (result.Equals("1"))
-                                    {
-                                        SelectedAccessPoint.AccessPoint.DeleteProfile();
-                                    }
-                                    if (result.Equals("2"))
-                                    {
-                                        overwrite = false;
-                                        Connect(SelectedAccessPoint, overwrite, authRequest);
-                                    }
-                                }));
+                                    SelectedAccessPoint.AccessPoint.DeleteProfile();
+                                }
+                                if (result.Equals("2"))
+                                {
+                                    overwrite = false;
+                                    Connect(SelectedAccessPoint, overwrite, authRequest);
+                                }
                             }
                             else
                             {
