@@ -17,7 +17,7 @@ namespace SachoWifiManager.Helper
         public TaskHelper(int runTaskDelayMs = 500)
         {
             RunTaskDelayMs = runTaskDelayMs;
-            Task.Run(new Action(()=> { Check(); }));
+            Task.Run(new Action(()=> { EnabledCheckThread(); }));
             swatch.Start();
             
         }
@@ -144,7 +144,7 @@ namespace SachoWifiManager.Helper
             swatch.Restart();
         }
 
-        void Check()
+        void EnabledCheckThread()
         {
             while (true)
             {
