@@ -248,7 +248,7 @@ namespace SachoWifiManager.ViewModel
             try
             {
                 AccessPointList = new ObservableCollection<MyAccessPoint>(
-                wifi.GetAccessPoints().OrderByDescending(s => s.IsConnected).OrderByDescending(ap => ap.SignalStrength).Select(
+                wifi.GetAccessPoints().OrderByDescending(ap => ap.SignalStrength).OrderByDescending(s => s.IsConnected).Select(
                     t => new MyAccessPoint() { AccessPoint = t }));
             }
             catch

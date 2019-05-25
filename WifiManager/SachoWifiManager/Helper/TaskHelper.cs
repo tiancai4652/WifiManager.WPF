@@ -12,35 +12,25 @@ namespace SachoWifiManager.Helper
     /// <summary>
     /// 执行任务并检测任务线程是否需要取消
     /// </summary>
-    public class TaskHelper:IDisposable
+    public class TaskHelper : IDisposable
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="runTaskDelayMs"></param>
         public TaskHelper(int runTaskDelayMs = 500)
         {
             RunTaskDelayMs = runTaskDelayMs;
-            Task.Run(new Action(()=> { EnabledCheckThread(); }));
+            Task.Run(new Action(() => { EnabledCheckThread(); }));
             swatch.Start();
-            
+            ActionStack = new ConcurrentStack<Action>();
         }
 
-        int RunTaskDelayMs = 500;
+        int RunTaskDelayMs = 1000;
         Stopwatch swatch = new Stopwatch();
-        static object Locker = new object();
+        ConcurrentStack<Action> ActionStack { get; set; }
 
-        Action _Action = null;
-        Action Action
-        {
-            get
-            {
-                return _Action;
-            }
-            set
-            {
-                lock (Locker)
-                {
-                    _Action = value;
-                }
-            }
-        }
+
 
         Action _CallBackAction = null;
         Action CallBackAction
@@ -105,7 +95,7 @@ namespace SachoWifiManager.Helper
                     }, token);
                     tasks.Add(taskToken);
                     Task.WaitAll(tasks.ToArray());
-                   
+
                 }
             }
             catch (Exception e)
@@ -115,11 +105,12 @@ namespace SachoWifiManager.Helper
             finally
             {
                 source = new CancellationTokenSource();
+                source.Token.ThrowIfCancellationRequested();
                 IsRunning = false;
-                if (IsFinished)
-                {
-                    Action = null;
-                }
+                //if (IsFinished)
+                //{
+                //    ActionStack.Clear();
+                //}
                 if (CallBackAction != null)
                 {
                     CallBackAction();
@@ -128,7 +119,6 @@ namespace SachoWifiManager.Helper
                 {
                     Task.Run(new Action(() => { RunMethodWithCancelToken(action); }));
                 }
-
             }
         }
 
@@ -137,10 +127,14 @@ namespace SachoWifiManager.Helper
         /// </summary>
         /// <param name="action">要延迟执行的动作</param>
         /// <param name="callBackAction">执行完毕/执行取消后发生的动作</param>
-        public void SendAction(Action action,Action callBackAction = null)
+        public void SendAction(Action action, Action callBackAction = null)
         {
+            source.Cancel();
+            source = new CancellationTokenSource();
+            source.Token.ThrowIfCancellationRequested();
+            Thread.Sleep(50);
             CallBackAction = callBackAction;
-            Action = action;
+            ActionStack.Push(action);
             swatch.Restart();
         }
 
@@ -149,11 +143,28 @@ namespace SachoWifiManager.Helper
             while (true)
             {
                 Thread.Sleep(50);
-                if ( Action != null)
+                if (ActionStack.Count > 0)
                 {
                     if (swatch.ElapsedMilliseconds > RunTaskDelayMs)
                     {
-                        RunMethodWithCancelToken(Action);
+                        Action ac = null;
+                        int count = 3;
+                        while (count > 0)
+                        {
+                            if (!ActionStack.TryPop(out ac))
+                            {
+                                count--;
+                            }
+                            else
+                            {
+                                ActionStack.Clear();
+                                break;
+                            }
+                        }
+                        if (ac != null)
+                        {
+                            RunMethodWithCancelToken(ac);
+                        }
                     }
                 }
             }
@@ -163,9 +174,9 @@ namespace SachoWifiManager.Helper
         {
             try
             {
-
+                source.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
